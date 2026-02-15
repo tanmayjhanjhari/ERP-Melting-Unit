@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Batch Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="header">Aluminium Plant Management System</div>
+
+<div class="nav">
+    <a href="/inventory">Inventory</a>
+    <a href="/batch">Batches</a>
+    <a href="/report">Report</a>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Batch: {{ batch.batch_name }}</h2>
+        <p><strong>Total Material Cost:</strong> {{ batch.material_cost }}</p>
+    </div>
+
+    
+    <div class="card">
+        <h2>Material Consumption</h2>
+
+        <table>
+            <tr>
+                <th>Material</th>
+                <th>Quantity Used</th>
+                <th>Cost</th>
+            </tr>
+
+            {% if materials %}
+    {% for m in materials %}
+    <tr>
+        <td>{{ m.item_name }}</td>
+        <td>{{ m.quantity_used }}</td>
+        <td>{{ m.cost }}</td>
+    </tr>
+    {% endfor %}
+{% else %}
+    <tr>
+        <td colspan="3">Legacy batch – material details not recorded</td>
+    </tr>
+{% endif %}
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

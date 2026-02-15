@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Production Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="header">Aluminium Plant Management System</div>
+
+<div class="nav">
+    <a href="/inventory">Inventory</a>
+    <a href="/batch">Batches</a>
+    <a href="/report">Report</a>
+</div>
+
+
+<div class="container">
+
+    <div class="card">
+        <h2>Production Summary</h2>
+
+        <p><strong>Total Batches:</strong> {{ total_batches }}</p>
+        <p><strong>Total Material Cost:</strong> {{ total_cost }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Batch-wise Cost</h2>
+
+        <table>
+            <tr>
+                <th>Batch Name</th>
+                <th>Material Cost</th>
+            </tr>
+
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.batch_name }}</td>
+                <td>{{ batch.material_cost }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
