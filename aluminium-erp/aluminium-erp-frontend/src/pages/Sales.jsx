@@ -56,6 +56,7 @@ export default function Sales() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Sales</h1>
 
+      
       {/* ADD SALE FORM */}
       <form
         onSubmit={submitSale}

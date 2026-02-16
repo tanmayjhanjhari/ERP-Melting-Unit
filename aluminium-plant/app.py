@@ -509,6 +509,61 @@ def api_inventory():
     conn.close()
     return jsonify([dict(i) for i in items])
 
+@app.route("/api/inventory/add", methods=["POST"])
+def add_inventory():
+    data = request.json
+    conn = get_db_connection()
+
+    conn.execute(
+        """
+        INSERT INTO inventory
+        (item_name, category, quantity, cost_per_unit, min_level, plant_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            data["item_name"],
+            data["category"],
+            data["quantity"],
+            data["cost_per_unit"],
+            data.get("min_level", 0),
+            1,
+        )
+    )
+
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+@app.route("/api/inventory/<int:item_id>/refill", methods=["POST"])
+def refill_inventory(item_id):
+    data = request.json
+    conn = get_db_connection()
+
+    if data.get("cost_per_unit"):
+        conn.execute(
+            """
+            UPDATE inventory
+            SET quantity = quantity + ?,
+                cost_per_unit = ?
+            WHERE id = ?
+            """,
+            (data["quantity"], data["cost_per_unit"], item_id)
+        )
+    else:
+        conn.execute(
+            """
+            UPDATE inventory
+            SET quantity = quantity + ?
+            WHERE id = ?
+            """,
+            (data["quantity"], item_id)
+        )
+
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+
 
 @app.route('/api/batches')
 def api_batches():
@@ -769,6 +824,38 @@ def api_attendance():
     conn.close()
     return jsonify([dict(r) for r in records])
 
+@app.route('/api/hr/attendance/upload-excel', methods=['POST'])
+def upload_attendance_excel():
+    file = request.files.get("file")
+    if not file:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    df = pd.read_excel(file)
+    conn = get_db_connection()
+
+    for _, row in df.iterrows():
+        emp = conn.execute(
+            "SELECT id FROM employees WHERE emp_code=?",
+            (row["emp_code"],)
+        ).fetchone()
+
+        if not emp:
+            continue  # skip invalid emp codes
+
+        conn.execute(
+            """
+            INSERT INTO attendance (employee_id, date, status, created_at)
+            VALUES (?, ?, ?, datetime('now'))
+            """,
+            (emp["id"], str(row["date"])[:10], row["status"])
+        )
+
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+
+
 @app.route("/api/payroll", methods=["GET"])
 def api_payroll():
     conn = get_db_connection()
@@ -911,6 +998,48 @@ def api_sales():
 
     conn.close()
     return jsonify([dict(s) for s in sales])
+
+@app.route("/api/accounts/sales/upload-excel", methods=["POST"])
+def upload_sales_excel():
+    file = request.files.get("file")
+    if not file:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    df = pd.read_excel(file)
+
+    conn = get_db_connection()
+
+    for _, row in df.iterrows():
+        plant = conn.execute(
+            "SELECT id FROM plants WHERE plant_name = ?",
+            (row["plant"],)
+        ).fetchone()
+
+        if not plant:
+            continue  # skip invalid plant
+
+        date = pd.to_datetime(row["date"]).strftime("%Y-%m-%d")
+
+        conn.execute(
+            """
+            INSERT INTO sales
+            (invoice, customer, plant_id, date, amount, created_at)
+            VALUES (?, ?, ?, ?, ?, datetime('now'))
+            """,
+            (
+                row["invoice"],
+                row["customer"],
+                plant["id"],
+                date,
+                float(row["amount"])
+            )
+        )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True})
+
 
 
 # ======================================================

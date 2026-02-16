@@ -36,5 +36,19 @@ CREATE TABLE IF NOT EXISTS batch_materials (
 )
 """)
 
+conn.execute("""
+CREATE TABLE IF NOT EXISTS sales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    invoice TEXT,
+    customer TEXT,
+    plant_id INTEGER,
+    date TEXT,
+    amount REAL,
+    created_at TEXT,
+    FOREIGN KEY (plant_id) REFERENCES plants(id)
+)
+""")
+
+
 conn.commit()
 conn.close()

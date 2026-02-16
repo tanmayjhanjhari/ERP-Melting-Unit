@@ -49,6 +49,36 @@ export default function Attendance() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Attendance</h1>
 
+      {/* UPLOAD ATTENDANCE EXCEL */}
+<div className="mb-6">
+  <label className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg cursor-pointer text-sm font-medium">
+    Upload Attendance Excel
+    <input
+      type="file"
+      accept=".xlsx,.xls"
+      hidden
+      onChange={(e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("http://localhost:5000/api/hr/attendance/upload-excel", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then(() => {
+            alert("Attendance uploaded successfully");
+            loadAttendance(); // ⚠️ must exist
+          });
+      }}
+    />
+  </label>
+</div>
+
+
       {/* ADD ATTENDANCE */}
       <form
         onSubmit={submitAttendance}
