@@ -96,19 +96,19 @@ Each action propagates through related modules in a controlled manner.
 ## 📸 Screenshots
 
 ### Dashboard Overview
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](aluminium-erp\screenshots/dashboard.png)
 
 ### Production Batch Creation
-![Batch](screenshots/batch.png)
+![Batch](aluminium-erp\screenshots/batch.png)
 
 ### Inventory Management
-![Inventory](screenshots/inventory.png)
+![Inventory](aluminium-erp\screenshots/inventory.png)
 
 ### Attendance Tracking
-![Attendance](screenshots/attendance.png)
+![Attendance](aluminium-erp\screenshots/attendance.png)
 
 ### Payroll Generation
-![Payroll](screenshots/payroll.png)
+![Payroll](aluminium-erp\screenshots/payroll.png)
 
 ---
 
